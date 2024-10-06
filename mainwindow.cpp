@@ -33,20 +33,17 @@ TPicture::TPicture(int w, int h)
    CenterX = Width / 2;
    CenterY = Height / 2;
 
-   FirstBackColor = Qt::red;
-   SecondBackColor = Qt::blue;
-
-   MyCanvas = vector<vector<QColor> >(Width, vector<QColor>(Height));
+   Canvas = vector<vector<QColor> >(Width, vector<QColor>(Height));
 }
 
 QColor TPicture::GetColor(int x, int y)
 {
-   return MyCanvas[x][y];
+   return Canvas[x][y];
 }
 
 void TPicture::SetColor(int x, int y, QColor clr)
 {
-   MyCanvas[x][y] = clr;
+   Canvas[x][y] = clr;
 }
 
 int TPicture::GetWidth()
@@ -95,7 +92,7 @@ void TPicture::DrawBackground()
 
    for(int X = 0; X < Width; X++)
       for(int Y = 0; Y < Height; Y++)
-          MyCanvas[X][Y] = FirstBackColor;
+          Canvas[X][Y] = FirstBackColor;
    for(int X = 0; X <= R; X++)
       for(int Y = 0; Y <= X; Y++)
       {
@@ -114,38 +111,56 @@ void TPicture::DrawBackground()
             Color = QColor::fromRgb(R, G, B);
 
             if ((CenterX + X) < Width && (CenterY + Y) < Height)
-                MyCanvas[CenterX + X][CenterY + Y] = Color;
+                Canvas[CenterX + X][CenterY + Y] = Color;
 
             if ((CenterX + X) < Width && (CenterY - Y) >= 0)
-                MyCanvas[CenterX + X][CenterY - Y] = Color;
+                Canvas[CenterX + X][CenterY - Y] = Color;
 
             if ((CenterY + Y) < Height && (CenterX - X) >= 0)
-                MyCanvas[CenterX - X][CenterY + Y] = Color;
+                Canvas[CenterX - X][CenterY + Y] = Color;
 
             if ((CenterX - X) >= 0 && (CenterY - Y) >= 0)
-                MyCanvas[CenterX - X][CenterY - Y] = Color;
+                Canvas[CenterX - X][CenterY - Y] = Color;
 
             if ((CenterX + Y) < Width && (CenterY + X) < Height)
-                MyCanvas[CenterX + Y][CenterY + X] = Color;
+                Canvas[CenterX + Y][CenterY + X] = Color;
 
             if ((CenterX + Y) < Width && (CenterY - X) >= 0)
-                MyCanvas[CenterX + Y][CenterY - X] = Color;
+                Canvas[CenterX + Y][CenterY - X] = Color;
 
             if ((CenterY + X) < Height && (CenterX - Y) >= 0)
-                MyCanvas[CenterX - Y][CenterY + X] = Color;
+                Canvas[CenterX - Y][CenterY + X] = Color;
 
             if ((CenterX - Y) >= 0 && (CenterY - X) >= 0)
-                MyCanvas[CenterX - Y][CenterY - X] = Color;
+                Canvas[CenterX - Y][CenterY - X] = Color;
 
          }
 }
 
+void TPicture::InitBuffer()
+{
+    Buffer.resize(Width);
+    for (int I = 0; I < Width; I++) Buffer[I].resize(Height);
+
+    for (int I = 0; I < Width; I++)
+       for (unsigned J = 0; J < Height; J++)
+          Buffer[I][J] = -1000;
+}
+
+void TPicture::SetBuffer(int x, int y, int value)
+{
+    Buffer[x][y] = value;
+}
+
+int TPicture::GetBuffer(int x, int y)
+{
+    return Buffer[x][y];
+}
+
 TScene Scene;
-TPicture MyPicture;
+TPicture Picture;
 
 double Transform[4][4];
-
-vector <vector <int> > Buffer;
 
 double Length(T3DPoint Vector)
 {
@@ -567,13 +582,6 @@ void SetTime(TScene &Scene)
     Rotate(Scene.Models[Scene.Sec],0,0,-SecAngle);
 }
 
-void InitBuffer()
-{
-   for (unsigned I = 0; I < Buffer.size(); I++)
-      for (unsigned J = 0; J < Buffer[I].size(); J++)
-         Buffer[I][J] = -1000;
-}
-
 void DrawTriangle(TVertex A, TVertex B, TVertex C, vector<vector<int> > Intersect, bool Bottom)
 {
    int StartR, StartG, StartB;
@@ -607,7 +615,6 @@ void DrawTriangle(TVertex A, TVertex B, TVertex C, vector<vector<int> > Intersec
          if (fabs(K1) <= 45)
             {
                tmp = Intersect[I][0] - A.Point.X;
-               tmp2 = B.Point.X - A.Point.X;
                tmp2 = B.Point.X - A.Point.X;
                StartR = A.Color.red() + tmp * (B.Color.red() - A.Color.red()) / tmp2;
                StartG = A.Color.green() + tmp * (B.Color.green() - A.Color.green()) / tmp2;
@@ -666,14 +673,13 @@ void DrawTriangle(TVertex A, TVertex B, TVertex C, vector<vector<int> > Intersec
                       ResultZ = StartZ + tmp * (FinalZ - StartZ) / tmp2;
                   }
 
-               if (((unsigned)(MyPicture.XC() + X) < Buffer.size())  &&
-                   ((unsigned)(MyPicture.YC() - Y) < Buffer[0].size()) &&
-                   ((MyPicture.XC() + X) > 0) && ((MyPicture.YC() - Y) > 0))
-                  if ((ResultZ >= Buffer[MyPicture.XC() + X][MyPicture.YC() - Y]) && (ResultZ >= -1000))
+               if (((unsigned)(Picture.XC() + X) < Picture.GetWidth())  &&
+                   ((unsigned)(Picture.YC() - Y) < Picture.GetHeight()) &&
+                   ((Picture.XC() + X) > 0) && ((Picture.YC() - Y) > 0))
+                  if (ResultZ >= Picture.GetBuffer(Picture.XC() + X, Picture.YC() - Y) && (ResultZ >= -1000))
                      {
-                        //Canvas->Pixels[XC + X][YC - Y] = (TColor)RGB(ResultR,ResultG,ResultB);
-                        MyPicture.SetColor(MyPicture.XC() + X, MyPicture.YC() - Y, QColor::fromRgb(ResultR,ResultG,ResultB));
-                        Buffer[MyPicture.XC() + X][MyPicture.YC() - Y] = ResultZ;
+                        Picture.SetColor(Picture.XC() + X, Picture.YC() - Y, QColor::fromRgb(ResultR,ResultG,ResultB));
+                        Picture.SetBuffer(Picture.XC() + X, Picture.YC() - Y, ResultZ);
                      }
             }
 
@@ -803,7 +809,8 @@ void DrawScene(TScene Scene)
         Rotate(Scene.Models[Index], Scene.Rotate.X, Scene.Rotate.Y, Scene.Rotate.Z);
      }
 
-  InitBuffer();
+  Picture.InitBuffer();
+
   FindColor(Scene);
   Projection(Scene);
 
@@ -943,9 +950,6 @@ void InitScene(TScene &Scene)
 
   Scene.Ka = 0.5; Scene.Kd = 0.5; Scene.Ks = 0.2;
 
-  MyPicture.SetFirstBackColor(Qt::red);
-  MyPicture.SetSecondBackColor(Qt::blue);
-
   Scene.Clock = false;
 
   Scene.Hour = -1; Scene.Min = -1; Scene.Sec = -1;
@@ -968,7 +972,7 @@ void InitScene(TScene &Scene)
 
 void MainWindow::on_buttonOpen_clicked()
 {
-    MyPicture = TPicture(ui->widgetDraw->width(), ui->widgetDraw->height());
+    Picture = TPicture(ui->widgetDraw->width(), ui->widgetDraw->height());
 
 
     QString fileName = QFileDialog::getOpenFileName(nullptr, "Открыть файл", "", "Все файлы (*.*)");
@@ -977,15 +981,10 @@ void MainWindow::on_buttonOpen_clicked()
 
     InitScene(Scene);
 
+    Picture.InitBuffer();
+    Picture.DrawBackground();
 
-    Buffer.resize(ui->widgetDraw->width());
-    for (int I = 0; I < ui->widgetDraw->width(); I++) Buffer[I].resize(ui->widgetDraw->height());
-
-     MyPicture.DrawBackground();
-
-     DrawScene(Scene);
-
-     drawingWidget->setPicture(MyPicture);
-
+    DrawScene(Scene);
+    drawingWidget->setPicture(Picture);
 }
 

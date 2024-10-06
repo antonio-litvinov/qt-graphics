@@ -21,7 +21,8 @@ private:
    QColor FirstBackColor;
    QColor SecondBackColor;
 
-   vector<vector<QColor> > MyCanvas;
+   vector <vector <int> > Buffer;
+   vector<vector<QColor> > Canvas;
 
 public:
    TPicture();
@@ -33,8 +34,13 @@ public:
    int XC();
    int YC();
 
+   void SetBuffer(int x, int y, int value);
+   int GetBuffer(int x, int y);
+
    void SetColor(int x, int y, QColor clr);
    QColor GetColor(int x, int y);
+
+   void InitBuffer();
 
    void SetFirstBackColor(QColor First);
    void SetSecondBackColor(QColor Second);
