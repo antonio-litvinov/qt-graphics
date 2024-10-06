@@ -86,12 +86,16 @@ void TPicture::DrawBackground()
 
    int R = Width * 0.6;
 
+   QColor teal(0, 128, 128);
+
+   SecondBackColor = Qt::black;
+   FirstBackColor = teal;
+
    R2 = R * R;
 
    for(int X = 0; X < Width; X++)
       for(int Y = 0; Y < Height; Y++)
-          MyCanvas[X][Y] = Qt::red;
-
+          MyCanvas[X][Y] = FirstBackColor;
    for(int X = 0; X <= R; X++)
       for(int Y = 0; Y <= X; Y++)
       {
@@ -966,6 +970,7 @@ void MainWindow::on_buttonOpen_clicked()
 {
     MyPicture = TPicture(ui->widgetDraw->width(), ui->widgetDraw->height());
 
+
     QString fileName = QFileDialog::getOpenFileName(nullptr, "Открыть файл", "", "Все файлы (*.*)");
 
     Scene.FileName = fileName;
@@ -981,5 +986,6 @@ void MainWindow::on_buttonOpen_clicked()
      DrawScene(Scene);
 
      drawingWidget->setPicture(MyPicture);
+
 }
 

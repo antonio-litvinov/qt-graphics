@@ -11,7 +11,7 @@ class DrawingWidget : public QWidget
 public:
     explicit DrawingWidget(QWidget *parent = nullptr);
 
-    void setPicture(const TPicture &new_picture);
+    void setPicture(TPicture &new_picture);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
