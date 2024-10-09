@@ -9,45 +9,6 @@
 
 using namespace std;
 
-class TPicture
-{
-private:
-   int Width;
-   int Height;
-
-   int CenterX;
-   int CenterY;
-
-   QColor FirstBackColor;
-   QColor SecondBackColor;
-
-   vector <vector <int> > Buffer;
-   vector<vector<QColor> > Canvas;
-
-public:
-   TPicture();
-   TPicture(int w, int h);
-
-   int GetWidth();
-   int GetHeight();
-
-   int XC();
-   int YC();
-
-   void SetBuffer(int x, int y, int value);
-   int GetBuffer(int x, int y);
-
-   void SetColor(int x, int y, QColor clr);
-   QColor GetColor(int x, int y);
-
-   void InitBuffer();
-
-   void SetFirstBackColor(QColor First);
-   void SetSecondBackColor(QColor Second);
-   void DrawBackground();
-};
-
-
 typedef vector<double> TVector;
 typedef vector<vector<double> > TMyCanvas;
 
@@ -122,15 +83,7 @@ typedef struct
 
 }  TScene;
 
-T3DPoint Vector(T3DPoint Start, T3DPoint Final);
-
-T3DPoint GetPoint(TVector Vector, bool Integer = false);
-
 TVector Multiply(TVector Vector);
-
-TVector PutPoint(T3DPoint Point);
-
-double ScalarProduct(T3DPoint A, T3DPoint B);
 
 void InitScene(TScene &Scene);
 
@@ -152,13 +105,7 @@ void Rotate(TModel &Model, double X, double Y, double Z);
 
 void DrawScene(TScene Scene);
 
-void DrawSphere(QColor Start, QColor Final);
-
 void FindColor(TScene &Scene);
-
-void Sort(vector<TVertex> &Triangle);
-
-void Bresenham(vector<vector<int> > &Intersect, int StartX, int StartY, int FinalX, int FinalY, int Status, int ExitY);
 
 void SetTime(TScene &Scene);
 

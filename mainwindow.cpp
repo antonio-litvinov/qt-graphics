@@ -23,171 +23,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-TPicture::TPicture() {}
-
-TPicture::TPicture(int w, int h)
-{
-   Width = w;
-   Height = h;
-
-   CenterX = Width / 2;
-   CenterY = Height / 2;
-
-   Canvas = vector<vector<QColor> >(Width, vector<QColor>(Height));
-}
-
-QColor TPicture::GetColor(int x, int y)
-{
-   return Canvas[x][y];
-}
-
-void TPicture::SetColor(int x, int y, QColor clr)
-{
-   Canvas[x][y] = clr;
-}
-
-int TPicture::GetWidth()
-{
-   return Width;
-}
-
-int TPicture::GetHeight()
-{
-   return Height;
-}
-
-int TPicture::XC()
-{
-   return CenterX;
-}
-
-int TPicture::YC()
-{
-   return CenterY;
-}
-
-void TPicture::SetFirstBackColor(QColor First)
-{
-   FirstBackColor = First;
-}
-
-void TPicture::SetSecondBackColor(QColor Second)
-{
-   SecondBackColor = Second;
-}
-
-void TPicture::DrawBackground()
-{
-   QColor Color;
-   double R2, r2, K;
-
-   int R = Width * 0.6;
-
-   QColor teal(0, 128, 128);
-
-   SecondBackColor = Qt::black;
-   FirstBackColor = teal;
-
-   R2 = R * R;
-
-   for(int X = 0; X < Width; X++)
-      for(int Y = 0; Y < Height; Y++)
-          Canvas[X][Y] = FirstBackColor;
-   for(int X = 0; X <= R; X++)
-      for(int Y = 0; Y <= X; Y++)
-      {
-            r2 = X * X + Y * Y;
-
-            if( r2 > R2 ) break;
-
-            K = 1 - r2 / R2;
-
-
-            int R = (int)(K * SecondBackColor.red() + (1 - K) * FirstBackColor.red());
-            int G = (int)(K * SecondBackColor.green() + (1 - K) * FirstBackColor.green());
-            int B = (int)(K * SecondBackColor.blue() + (1 - K) * FirstBackColor.blue());
-
-
-            Color = QColor::fromRgb(R, G, B);
-
-            if ((CenterX + X) < Width && (CenterY + Y) < Height)
-                Canvas[CenterX + X][CenterY + Y] = Color;
-
-            if ((CenterX + X) < Width && (CenterY - Y) >= 0)
-                Canvas[CenterX + X][CenterY - Y] = Color;
-
-            if ((CenterY + Y) < Height && (CenterX - X) >= 0)
-                Canvas[CenterX - X][CenterY + Y] = Color;
-
-            if ((CenterX - X) >= 0 && (CenterY - Y) >= 0)
-                Canvas[CenterX - X][CenterY - Y] = Color;
-
-            if ((CenterX + Y) < Width && (CenterY + X) < Height)
-                Canvas[CenterX + Y][CenterY + X] = Color;
-
-            if ((CenterX + Y) < Width && (CenterY - X) >= 0)
-                Canvas[CenterX + Y][CenterY - X] = Color;
-
-            if ((CenterY + X) < Height && (CenterX - Y) >= 0)
-                Canvas[CenterX - Y][CenterY + X] = Color;
-
-            if ((CenterX - Y) >= 0 && (CenterY - X) >= 0)
-                Canvas[CenterX - Y][CenterY - X] = Color;
-
-         }
-}
-
-void TPicture::InitBuffer()
-{
-    Buffer.resize(Width);
-    for (int I = 0; I < Width; I++) Buffer[I].resize(Height);
-
-    for (int I = 0; I < Width; I++)
-       for (unsigned J = 0; J < Height; J++)
-          Buffer[I][J] = -1000;
-}
-
-void TPicture::SetBuffer(int x, int y, int value)
-{
-    Buffer[x][y] = value;
-}
-
-int TPicture::GetBuffer(int x, int y)
-{
-    return Buffer[x][y];
-}
 
 TScene Scene;
 TPicture Picture;
 
 double Transform[4][4];
 
-double Length(T3DPoint Vector)
-{
-   return sqrt(Vector.X * Vector.X + Vector.Y * Vector.Y + Vector.Z * Vector.Z);
-}
 
-T3DPoint Vector(T3DPoint Start, T3DPoint Final)
-{
-   T3DPoint Result;
 
-   Result.X = Final.X - Start.X;
-   Result.Y = Final.Y - Start.Y;
-   Result.Z = Final.Z - Start.Z;
-
-   double L = Length(Result);
-
-   Result.X /= L;
-   Result.Y /= L;
-   Result.Z /= L;
-
-   return Result;
-}
-
-double ScalarProduct(T3DPoint A, T3DPoint B)
-{
-   return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
-}
 
 TVector Multiply(TVector Vector)
 {
@@ -204,13 +47,7 @@ TVector Multiply(TVector Vector)
    return Result;
 }
 
-double DegToRad(double degrees) {
-    return degrees * M_PI / 180.0;
-}
 
-double RadToDeg(double radians) {
-    return radians * 180.0 / M_PI;
-}
 
 void Clear()
 {
@@ -292,38 +129,6 @@ void InitTransform(double Alpha, double Beta)
    Transform[2][1] = cos(Alpha) * sin(Beta);
    Transform[2][2] = cos(Beta);
    Transform[3][3] = 1;
-}
-
-T3DPoint GetPoint(TVector Vector, bool Integer)
-{
-   T3DPoint Result;
-
-   if (Integer)
-      {
-         Result.X = (int)Vector[0];
-         Result.Y = (int)Vector[1];
-         Result.Z = (int)Vector[2];
-      }
-   else
-      {
-         Result.X = Vector[0];
-         Result.Y = Vector[1];
-         Result.Z = Vector[2];
-      }
-
-   return Result;
-}
-
-TVector PutPoint(T3DPoint Point)
-{
-   TVector Result;
-
-   Result.push_back(Point.X);
-   Result.push_back(Point.Y);
-   Result.push_back(Point.Z);
-   Result.push_back(1);
-
-   return Result;
 }
 
 void Projection(TScene &Scene)
@@ -474,96 +279,6 @@ void FindColor(TScene &Scene)
       }
 }
 
-void Sort(vector<TVertex> &Triangle)
-{
-   TVertex Temp;
-
-   for (int I = 0; I < 3; I++)
-     for (int J = 0; J < 3; J++)
-        {
-            if (Triangle[I].Point.Y < Triangle[J].Point.Y)
-                {
-                   Temp = Triangle[I];
-                   Triangle[I] = Triangle[J];
-                   Triangle[J] = Temp;
-                }
-        }
-}
-
-int Sign(float X)
-{
-   if (X < 0) return -1;
-   if (X > 0) return 1;
-   return 0;
-}
-
-void Bresenham(vector<vector<int> > &Intersect, int StartX, int StartY, int FinalX, int FinalY, int Status, int ExitY)
-{
-   int e;
-   int Change;
-   int Temp;
-   int DX,DY;
-   int X,Y;
-   int Sx,Sy;
-   int I;
-
-   int Index = 0;
-
-   X = StartX; Y = StartY;
-
-   DX = FinalX - StartX; DY = FinalY - StartY;
-
-   Sx = Sign(DX); Sy = Sign(DY);
-
-   DX = abs(DX); DY = abs(DY);
-
-   if (DX > DY) Change = 0;
-   else
-      {
-         Change = 1;
-         Temp = DX;
-         DX = DY;
-         DY = Temp;
-      }
-
-   e = 2 * DY - DX;
-
-   for (I = 1; I <= DX; I++)
-      {
-         Intersect[Index][Status] = X;
-
-         if (e >= 0)
-            {
-               if (Change == 0)
-                  {
-                     Y += Sy;
-                     Index++;
-                  }
-               else
-                  X += Sx;
-
-               e -= 2 * DX;
-            }
-
-         if (Change == 0)
-            X += Sx;
-         else
-            {
-               Y += Sy;
-               Index++;
-            }
-
-         e += 2 * DY;
-
-         if (Y == ExitY)
-            {
-               Intersect[Index][Status] = X;
-               return;
-            }
-      }
-   Intersect[Index][Status] = X;
-}
-
 void SetTime(TScene &Scene)
 {
     unsigned short Hour, Min, Sec;
@@ -582,219 +297,6 @@ void SetTime(TScene &Scene)
     Rotate(Scene.Models[Scene.Sec],0,0,-SecAngle);
 }
 
-void DrawTriangle(TVertex A, TVertex B, TVertex C, vector<vector<int> > Intersect, bool Bottom)
-{
-   int StartR, StartG, StartB;
-
-   double StartZ;
-
-   int FinalR, FinalG, FinalB;
-
-   double FinalZ;
-
-   int ResultR, ResultG, ResultB;
-
-   double ResultZ;
-
-   int Y = A.Point.Y;
-
-   double K1, K2;
-
-   double tmp, tmp2;
-
-   if (A.Point.X == B.Point.X) K1 = 90;
-   else
-      K1 = RadToDeg(atan( (B.Point.Y - A.Point.Y) / (B.Point.X - A.Point.X) ));
-
-   if (A.Point.X == C.Point.X) K2 = 90;
-   else
-      K2 = RadToDeg(atan( (C.Point.Y - A.Point.Y) / (C.Point.X - A.Point.X) ));
-
-   for (unsigned I = 0; I < Intersect.size(); I++)
-      {
-         if (fabs(K1) <= 45)
-            {
-               tmp = Intersect[I][0] - A.Point.X;
-               tmp2 = B.Point.X - A.Point.X;
-               StartR = A.Color.red() + tmp * (B.Color.red() - A.Color.red()) / tmp2;
-               StartG = A.Color.green() + tmp * (B.Color.green() - A.Color.green()) / tmp2;
-               StartB = A.Color.blue() + tmp * (B.Color.blue() - A.Color.blue()) / tmp2;
-
-               StartZ = A.Point.Z + tmp * (B.Point.Z - A.Point.Z) / tmp2;
-            }
-         else
-            {
-               tmp = Y - A.Point.Y;
-               tmp2 = B.Point.Y - A.Point.Y;
-               StartR = A.Color.red() + tmp * (B.Color.red() - A.Color.red()) / tmp2;
-               StartG = A.Color.green() + tmp * (B.Color.green() - A.Color.green()) / tmp2;
-               StartB = A.Color.blue() + tmp * (B.Color.blue() - A.Color.blue()) / tmp2;
-
-               StartZ = A.Point.Z + tmp * (B.Point.Z - A.Point.Z) / tmp2;
-            }
-
-         if (fabs(K2) <= 45)
-            {
-               tmp = Intersect[I][1] - A.Point.X;
-               tmp2 = C.Point.X - A.Point.X;
-               FinalR = A.Color.red()+ tmp * (C.Color.red() - A.Color.red()) / tmp2;
-               FinalG = A.Color.green() + tmp * (C.Color.green() - A.Color.green()) / tmp2;
-               FinalB = A.Color.blue() + tmp * (C.Color.blue() - A.Color.blue()) / tmp2;
-
-               FinalZ = A.Point.Z + tmp * (C.Point.Z - A.Point.Z) / tmp2;
-            }
-         else
-            {
-               tmp = Y - A.Point.Y;
-               tmp2 = C.Point.Y - A.Point.Y;
-               FinalR = A.Color.red() + tmp * (C.Color.red() - A.Color.red()) / tmp2;
-               FinalG = A.Color.green() + tmp * (C.Color.green() - A.Color.green()) / tmp2;
-               FinalB = A.Color.blue() + tmp * (C.Color.blue() - A.Color.blue()) / tmp2;
-
-               FinalZ = A.Point.Z + tmp * (C.Point.Z - A.Point.Z) / tmp2;
-            }
-
-         for (int X = Intersect[I][0]; X <= Intersect[I][1]; X++)
-            {
-               ResultR = StartR;
-               ResultG = StartG;
-               ResultB = StartB;
-
-               ResultZ = StartZ;
-
-               if (Intersect[I][0] != Intersect[I][1])
-                  {
-                      tmp = X - Intersect[I][0];
-                      tmp2 = Intersect[I][1] - Intersect[I][0];
-                      ResultR = StartR + tmp * (FinalR - StartR) / tmp2;
-                      ResultG = StartG + tmp * (FinalG - StartG) / tmp2;
-                      ResultB = StartB + tmp * (FinalB - StartB) / tmp2;
-
-                      ResultZ = StartZ + tmp * (FinalZ - StartZ) / tmp2;
-                  }
-
-               if (((unsigned)(Picture.XC() + X) < Picture.GetWidth())  &&
-                   ((unsigned)(Picture.YC() - Y) < Picture.GetHeight()) &&
-                   ((Picture.XC() + X) > 0) && ((Picture.YC() - Y) > 0))
-                  if (ResultZ >= Picture.GetBuffer(Picture.XC() + X, Picture.YC() - Y) && (ResultZ >= -1000))
-                     {
-                        Picture.SetColor(Picture.XC() + X, Picture.YC() - Y, QColor::fromRgb(ResultR,ResultG,ResultB));
-                        Picture.SetBuffer(Picture.XC() + X, Picture.YC() - Y, ResultZ);
-                     }
-            }
-
-         if (Bottom) Y--;
-         else        Y++;
-      }
-}
-
-void Rasterize(TVertex A, TVertex B, TVertex C)
-{
-   int dY;
-   vector <vector <int> > Intersect;
-
-   vector <TVertex> Temp;
-
-   Temp.push_back(A);
-   Temp.push_back(B);
-   Temp.push_back(C);
-
-   Sort(Temp);
-
-   A = Temp[0];
-   B = Temp[1];
-   C = Temp[2];
-
-   double K,X;
-
-   if (A.Point.Y == C.Point.Y) X = A.Point.X;
-   else
-      {
-         K = (A.Point.X - C.Point.X) / (A.Point.Y - C.Point.Y);
-         X = C.Point.X + K * (B.Point.Y - C.Point.Y);
-      }
-
-   dY = B.Point.Y - A.Point.Y + 1;
-
-   Intersect.resize(dY);
-   for (int i = 0; i < dY; i++) Intersect[i].resize(2);
-
-   if (X > B.Point.X)
-      {
-         if (dY == 1)
-            {
-               Intersect[0][0] = B.Point.X;
-               Intersect[0][1] = A.Point.X;
-            }
-         else
-            {
-               Bresenham(Intersect, A.Point.X, A.Point.Y, B.Point.X, B.Point.Y, 0, B.Point.Y);
-               Bresenham(Intersect, A.Point.X, A.Point.Y, C.Point.X, C.Point.Y, 1, B.Point.Y);
-            }
-         DrawTriangle(A, B, C, Intersect, false);
-      }
-   else
-      {
-        if (dY == 1)
-           {
-              Intersect[0][0] = A.Point.X;
-              Intersect[0][1] = B.Point.X;
-           }
-        else
-           {
-              Bresenham(Intersect, A.Point.X, A.Point.Y, C.Point.X, C.Point.Y, 0, B.Point.Y);
-              Bresenham(Intersect, A.Point.X, A.Point.Y, B.Point.X, B.Point.Y, 1, B.Point.Y);
-           }
-        DrawTriangle(A, C, B, Intersect, false);
-      }
-
-   dY = C.Point.Y - B.Point.Y + 1;
-
-   Intersect.resize(dY);
-   for (int i = 0; i < dY; i++) Intersect[i].resize(2);
-
-   if (X > B.Point.X)
-      {
-         if (dY == 1)
-            {
-               Intersect[0][0] = B.Point.X;
-               Intersect[0][1] = C.Point.X;
-            }
-         else
-            {
-               Bresenham(Intersect, C.Point.X, C.Point.Y, B.Point.X, B.Point.Y, 0, B.Point.Y);
-               Bresenham(Intersect, C.Point.X, C.Point.Y, A.Point.X, A.Point.Y, 1, B.Point.Y);
-            }
-         DrawTriangle(C, B, A, Intersect, true);
-      }
-   else
-      {
-         if (dY == 1)
-            {
-               Intersect[0][0] = C.Point.X;
-               Intersect[0][1] = B.Point.X;
-            }
-         else
-            {
-               Bresenham(Intersect, C.Point.X, C.Point.Y, A.Point.X, A.Point.Y, 0, B.Point.Y);
-               Bresenham(Intersect, C.Point.X, C.Point.Y, B.Point.X, B.Point.Y, 1, B.Point.Y);
-            }
-         DrawTriangle(C, A, B, Intersect, true);
-      }
-}
-
-void DrawModel(TModel Model)
-{
-   TVertex A,B,C;
-
-   for (int I = 0; I < Model.NumFaces; I++)
-      {
-         A = Model.Vertices[Model.Faces[I].A];
-         B = Model.Vertices[Model.Faces[I].B];
-         C = Model.Vertices[Model.Faces[I].C];
-         Rasterize(A, B, C);
-      }
-}
 
 void DrawScene(TScene Scene)
 {
@@ -815,7 +317,7 @@ void DrawScene(TScene Scene)
   Projection(Scene);
 
   for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
-     DrawModel(Scene.Models[Index]);
+     Picture.DrawModel(Scene.Models[Index]);
 }
 
 void Load(QString FileName, TScene &Scene)
@@ -868,7 +370,7 @@ void Load(QString FileName, TScene &Scene)
               File >> R;
               File >> G;
               File >> B;
-              //SetFirstBackColor(QColor::fromRgb(R, G, B));
+              // Set start background color
            }
 
         if (String == "*SCENE_FINAL")
@@ -876,7 +378,7 @@ void Load(QString FileName, TScene &Scene)
               File >> R;
               File >> G;
               File >> B;
-              //MyPicture.SetSecondBackColor(QColor::fromRgb(R, G, B));
+              // Set final background color
            }
 
         if (String == "*SCENE_CLOCK")

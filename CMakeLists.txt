@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         header.h
         drawingwidget.h drawingwidget.cpp
+        functions.h functions.cpp
+        picture.h picture.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

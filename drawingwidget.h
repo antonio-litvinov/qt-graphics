@@ -1,9 +1,9 @@
 #ifndef DRAWINGWIDGET_H
 #define DRAWINGWIDGET_H
 
+#include "picture.h"
 #include <QWidget>
 #include <QPainter>
-#include <header.h>
 
 class DrawingWidget : public QWidget
 {
