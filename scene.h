@@ -7,8 +7,6 @@
 class TScene
 {
 public:
-    TScene();
-
     QString FileName;
 
     vector <TModel> Models;
@@ -31,6 +29,9 @@ public:
     bool Clock;
 
     TPicture Picture;
+
+    TScene();
+    TScene(QString FileName, int w, int h);
 
     void Load(QString FileName);
     void InitScene();

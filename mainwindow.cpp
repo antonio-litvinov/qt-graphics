@@ -24,31 +24,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-
-
 TScene Scene;
-//TPicture Picture;
-
 
 void MainWindow::on_buttonOpen_clicked()
 {
-    Scene = TScene();
+    QString FileName = QFileDialog::getOpenFileName(nullptr, "Открыть файл", "", "Все файлы (*.*)");
 
-    Scene.Picture = TPicture(ui->widgetDraw->width(), ui->widgetDraw->height());
+    if (!FileName.isEmpty())
+    {
+        Scene = TScene(FileName, ui->widgetDraw->width(), ui->widgetDraw->height());
 
+        Scene.Draw();
 
-    QString fileName = QFileDialog::getOpenFileName(nullptr, "Открыть файл", "", "Все файлы (*.*)");
-
-    Scene.FileName = fileName;
-
-    Scene.InitScene();
-
-    Scene.Picture.InitBuffer();
-    Scene.Picture.DrawBackground();
-
-    Scene.Draw();
-
-    drawingWidget->setPicture(Scene.Picture);
+        drawingWidget->setPicture(Scene.Picture);
+    }
 }
 

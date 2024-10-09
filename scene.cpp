@@ -7,6 +7,50 @@ TScene::TScene()
 
 }
 
+TScene::TScene(QString FileName, int w, int h)
+{
+    Move.X = 0;
+    Move.Y = 0;
+    Move.Z = 0;
+
+    Scale.X = 1;
+    Scale.Y = 1;
+    Scale.Z = 1;
+
+    Rotate.X = 0;
+    Rotate.Y = 0;
+    Rotate.Z = 0;
+
+    Camera.Alpha = 0;
+    Camera.Beta  = 0;
+
+    Ka = 0.5;
+    Kd = 0.5; Ks = 0.2;
+
+    Clock = false;
+
+    Hour = -1;
+    Min = -1;
+    Sec = -1;
+
+    Load(FileName);
+
+    if (Lights.size() == 0)
+    {
+        TLight Light;
+
+        Light.Point.X = 0;
+        Light.Point.Y = 0;
+        Light.Point.Z = 100;
+
+        Light.Color = Qt::white;
+
+        Lights.push_back(Light);
+    }
+
+    Picture = TPicture(w, h);
+}
+
 void TScene::Projection()
 {
     TVector xyz,XYZ;
@@ -105,6 +149,8 @@ void TScene::SetTime()
 
 void TScene::Draw()
 {
+    Picture.DrawBackground();
+
     if ((Clock) && (Models.size() >= 3)
         && (Hour != -1) && (Min != -1) && (Sec != -1))
         SetTime();
@@ -247,42 +293,5 @@ void TScene::Load(QString FileName)
 
 void TScene::InitScene()
 {
-    Move.X = 0;
-    Move.Y = 0;
-    Move.Z = 0;
-
-    Scale.X = 1;
-    Scale.Y = 1;
-    Scale.Z = 1;
-
-    Rotate.X = 0;
-    Rotate.Y = 0;
-    Rotate.Z = 0;
-
-    Camera.Alpha = 0;
-    Camera.Beta  = 0;
-
-    Ka = 0.5;
-    Kd = 0.5; Ks = 0.2;
-
-    Clock = false;
-
-    Hour = -1;
-    Min = -1;
-    Sec = -1;
-
-    Load(FileName);
-
-    if (Lights.size() == 0)
-    {
-        TLight Light;
-
-        Light.Point.X = 0;
-        Light.Point.Y = 0;
-        Light.Point.Z = 100;
-
-        Light.Color = Qt::white;
-
-        Lights.push_back(Light);
-    }
+//frf
 }
