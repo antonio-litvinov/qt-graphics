@@ -24,15 +24,18 @@ MainWindow::~MainWindow()
 }
 
 
+TModel::TModel()
+{
+
+}
+
 TScene Scene;
 TPicture Picture;
 
-double Transform[4][4];
 
 
 
-
-TVector Multiply(TVector Vector)
+TVector TModel::Multiply(TVector Vector)
 {
    TVector Result;
    double Sum;
@@ -47,16 +50,14 @@ TVector Multiply(TVector Vector)
    return Result;
 }
 
-
-
-void Clear()
+void TModel::Clear()
 {
    for (int I = 0; I < 4; I++)
       for (int J = 0; J < 4; J++)
          Transform[I][J] = 0;
 }
 
-void InitMove(double dx, double dy, double dz)
+void TModel::InitMove(double dx, double dy, double dz)
 {
    Clear();
    Transform[0][0] = 1;
@@ -68,7 +69,7 @@ void InitMove(double dx, double dy, double dz)
    Transform[2][3] = dz;
 }
 
-void InitScale(double kx, double ky, double kz)
+void TModel::InitScale(double kx, double ky, double kz)
 {
    Clear();
    Transform[0][0] = kx;
@@ -77,7 +78,7 @@ void InitScale(double kx, double ky, double kz)
    Transform[3][3] = 1;
 }
 
-void InitRotate(double Angle, char Axis)
+void TModel::InitRotate(double Angle, char Axis)
 {
    Clear();
    Angle = DegToRad(Angle);
@@ -113,7 +114,7 @@ void InitRotate(double Angle, char Axis)
       }
 }
 
-void InitTransform(double Alpha, double Beta)
+void TModel::InitTransform(double Alpha, double Beta)
 {
    Clear();
 
@@ -131,58 +132,41 @@ void InitTransform(double Alpha, double Beta)
    Transform[3][3] = 1;
 }
 
-void Projection(TScene &Scene)
-{
-   TVector xyz,XYZ;
-
-   InitTransform(Scene.Camera.Alpha,Scene.Camera.Beta);
-
-   for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
-      {
-         for (int I = 0; I < Scene.Models[Index].NumVertex; I++)
-            {
-               xyz = PutPoint(Scene.Models[Index].Vertices[I].Point);
-               XYZ = Multiply(xyz);
-               Scene.Models[Index].Vertices[I].Point = GetPoint(XYZ, true);
-            }
-      }
-}
-
-void Move(TModel &Model, double DX, double DY, double DZ)
+void TModel::Move(double DX, double DY, double DZ)
 {
    TVector xyz,XYZ;
 
    InitMove(DX, DY, DZ);
 
-   for (int I = 0; I < Model.NumVertex; I++)
+   for (int I = 0; I < NumVertex; I++)
       {
-         xyz = PutPoint(Model.Vertices[I].Point);
+         xyz = PutPoint(Vertices[I].Point);
          XYZ = Multiply(xyz);
-         Model.Vertices[I].Point = GetPoint(XYZ);
+         Vertices[I].Point = GetPoint(XYZ);
       }
 }
 
-void Scale(TModel &Model, double KX, double KY, double KZ)
+void TModel::Scale(double KX, double KY, double KZ)
 {
    TVector xyz,XYZ;
 
    InitScale(KX, KY, KZ);
 
-   for (int I = 0; I < Model.NumVertex; I++)
+   for (int I = 0; I < NumVertex; I++)
       {
-         xyz = PutPoint(Model.Vertices[I].Point);
+         xyz = PutPoint(Vertices[I].Point);
          XYZ = Multiply(xyz);
-         Model.Vertices[I].Point = GetPoint(XYZ);
+         Vertices[I].Point = GetPoint(XYZ);
       }
 }
 
-void Rotate(TModel &Model, double X, double Y, double Z)
+void TModel::Rotate(double X, double Y, double Z)
 {
    TVector xyz,XYZ;
 
-   for (int I = 0; I < Model.NumVertex; I++)
+   for (int I = 0; I < NumVertex; I++)
       {
-         xyz = PutPoint(Model.Vertices[I].Point);
+         xyz = PutPoint(Vertices[I].Point);
 
          InitRotate(X, 'X');
          XYZ = Multiply(xyz);
@@ -195,9 +179,9 @@ void Rotate(TModel &Model, double X, double Y, double Z)
          InitRotate(Z, 'Z');
          XYZ = Multiply(xyz);
 
-         Model.Vertices[I].Point = GetPoint(XYZ);
+         Vertices[I].Point = GetPoint(XYZ);
 
-         xyz = PutPoint(Model.Vertices[I].Normal);
+         xyz = PutPoint(Vertices[I].Normal);
 
          InitRotate(X, 'X');
          XYZ = Multiply(xyz);
@@ -210,9 +194,28 @@ void Rotate(TModel &Model, double X, double Y, double Z)
          InitRotate(Z, 'Z');
          XYZ = Multiply(xyz);
 
-         Model.Vertices[I].Normal = GetPoint(XYZ);
+         Vertices[I].Normal = GetPoint(XYZ);
       }
 }
+
+void Projection(TScene &Scene)
+{
+    TVector xyz,XYZ;
+
+
+    for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
+    {
+        Scene.Models[Index].InitTransform(Scene.Camera.Alpha,Scene.Camera.Beta);
+
+        for (int I = 0; I < Scene.Models[Index].NumVertex; I++)
+        {
+            xyz = PutPoint(Scene.Models[Index].Vertices[I].Point);
+            XYZ = Scene.Models[Index].Multiply(xyz);
+            Scene.Models[Index].Vertices[I].Point = GetPoint(XYZ, true);
+        }
+    }
+}
+
 
 void FindColor(TScene &Scene)
 {
@@ -292,32 +295,32 @@ void SetTime(TScene &Scene)
     double MinAngle = Min * 6;
     double SecAngle = Sec * 6;
 
-    Rotate(Scene.Models[Scene.Hour],0,0,-HourAngle);
-    Rotate(Scene.Models[Scene.Min], 0,0,-MinAngle);
-    Rotate(Scene.Models[Scene.Sec],0,0,-SecAngle);
+    Scene.Models[Scene.Hour].Rotate(0,0,-HourAngle);
+    Scene.Models[Scene.Min].Rotate(0,0,-MinAngle);
+    Scene.Models[Scene.Sec].Rotate(0,0,-SecAngle);
 }
 
 
 void DrawScene(TScene Scene)
 {
-  if ((Scene.Clock) && (Scene.Models.size() >= 3)
-  && (Scene.Hour != -1) && (Scene.Min != -1) && (Scene.Sec != -1))
-     SetTime(Scene);
+    if ((Scene.Clock) && (Scene.Models.size() >= 3)
+        && (Scene.Hour != -1) && (Scene.Min != -1) && (Scene.Sec != -1))
+        SetTime(Scene);
 
-  for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
-     {
-        Move(Scene.Models[Index], Scene.Move.X, Scene.Move.Y, Scene.Move.Z);
-        Scale(Scene.Models[Index], Scene.Scale.X, Scene.Scale.Y, Scene.Scale.Z);
-        Rotate(Scene.Models[Index], Scene.Rotate.X, Scene.Rotate.Y, Scene.Rotate.Z);
-     }
+    for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
+    {
+        Scene.Models[Index].Move(Scene.Move.X, Scene.Move.Y, Scene.Move.Z);
+        Scene.Models[Index].Scale(Scene.Scale.X, Scene.Scale.Y, Scene.Scale.Z);
+        Scene.Models[Index].Rotate(Scene.Rotate.X, Scene.Rotate.Y, Scene.Rotate.Z);
+    }
 
-  Picture.InitBuffer();
+    Picture.InitBuffer();
 
-  FindColor(Scene);
-  Projection(Scene);
+    FindColor(Scene);
+    Projection(Scene);
 
-  for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
-     Picture.DrawModel(Scene.Models[Index]);
+    for (unsigned Index = 0; Index < Scene.Models.size(); Index++)
+        Picture.DrawModel(Scene.Models[Index]);
 }
 
 void Load(QString FileName, TScene &Scene)

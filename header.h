@@ -46,17 +46,32 @@ typedef struct
 
 }  TLight;
 
-typedef struct
+class TModel
 {
-   vector<TVertex> Vertices;
-   vector<TFace> Faces;
+public:
+    TModel();
 
-   int NumVertex;
-   int NumFaces;
+    vector<TVertex> Vertices;
+    vector<TFace> Faces;
 
-   QColor Color;
+    int NumVertex;
+    int NumFaces;
 
-}  TModel;
+    QColor Color;
+
+    double Transform[4][4];
+
+    TVector Multiply(TVector Vector);
+    void Clear();
+    void InitMove(double dx, double dy, double dz);
+    void InitScale(double kx, double ky, double kz);
+    void InitRotate(double Angle, char Axis);
+    void InitTransform(double Alpha, double Beta);
+
+    void Move(double DX, double DY, double DZ);
+    void Scale(double KX, double KY, double KZ);
+    void Rotate(double X, double Y, double Z);
+};
 
 typedef struct
 {
