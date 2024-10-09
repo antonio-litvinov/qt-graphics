@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include <header.h>
+#include "types.h"
 
 double DegToRad(double degrees);
 

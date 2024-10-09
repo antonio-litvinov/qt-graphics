@@ -19,7 +19,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        header.h
+
         drawingwidget.h drawingwidget.cpp
         functions.h functions.cpp
         picture.h picture.cpp
@@ -30,6 +30,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         model.h model.cpp
+        scene.h scene.cpp
+        types.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Clock APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <header.h>
+#include "types.h"
 #include "drawingwidget.h"
 
 QT_BEGIN_NAMESPACE

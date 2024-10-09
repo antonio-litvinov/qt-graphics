@@ -1,8 +1,9 @@
 #ifndef PICTURE_H
 #define PICTURE_H
 
-#include <header.h>
-#include <functions.h>
+#include "types.h"
+#include "model.h"
+#include "functions.h"
 
 class TPicture
 {
