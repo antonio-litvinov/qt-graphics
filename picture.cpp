@@ -35,7 +35,7 @@ void TPicture::DrawBackground()
 
    int R = Width * 0.6;
 
-   QColor teal(0, 128, 128);
+   QColor teal(0, 70, 70);
 
    QColor Start = teal;
    QColor Final = Qt::black;
