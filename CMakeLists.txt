@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         model.h model.cpp
         scene.h scene.cpp
         types.h
+        resources.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Clock APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

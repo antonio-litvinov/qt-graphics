@@ -10,6 +10,7 @@ public:
     QString FileName;
 
     vector <TModel> Models;
+    vector <TModel> SourceModels;
     vector <TLight> Lights;
 
     TCamera Camera;

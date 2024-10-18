@@ -289,6 +289,8 @@ void TScene::Load(QString FileName)
     }
 
     File.close();
+
+    SourceModels = Models;
 }
 
 void TScene::InitScene()
